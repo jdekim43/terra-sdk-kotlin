@@ -7,14 +7,14 @@ import kotlin.coroutines.CoroutineContext
 
 open class ConnectedTerraWallet internal constructor(val terra: Terra, origin: TerraWallet) : TerraWallet by origin {
 
-    fun broadcast(
+    open fun broadcast(
         transaction: Transaction,
         gasAmount: ULong? = null,
         feeDenomination: String? = null,
         coroutineContext: CoroutineContext = Dispatchers.Default,
     ) = terra.broadcaster.broadcast(this, transaction, gasAmount, feeDenomination, coroutineContext)
 
-    fun broadcast(
+    open fun broadcast(
         gasAmount: ULong? = null,
         feeDenomination: String? = null,
         coroutineContext: CoroutineContext = Dispatchers.Default,

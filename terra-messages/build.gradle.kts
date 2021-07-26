@@ -7,9 +7,11 @@ version = rootProject.version
 
 kotlin {
     sourceSets {
+        @Suppress("UNUSED_VARIABLE")
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
                 implementation("kr.jadekim:common-util:1.1.16")
 
                 api("${rootProject.group}:terra-types:${rootProject.version}")

@@ -1,6 +1,5 @@
 package money.terra.wallet
 
-import kotlinx.coroutines.Dispatchers
 import money.terra.Terra
 import money.terra.model.Transaction
 import kotlin.coroutines.CoroutineContext
@@ -12,17 +11,17 @@ class ConnectedOwnTerraWallet internal constructor(
 
     override val address: String = origin.address
 
-    fun broadcast(
+    override fun broadcast(
         transaction: Transaction,
-        gasAmount: ULong? = null,
-        feeDenomination: String? = null,
-        coroutineContext: CoroutineContext = Dispatchers.Default,
+        gasAmount: ULong?,
+        feeDenomination: String?,
+        coroutineContext: CoroutineContext,
     ) = terra.broadcaster.broadcast(this, transaction, gasAmount, feeDenomination, coroutineContext)
 
-    fun broadcast(
-        gasAmount: ULong? = null,
-        feeDenomination: String? = null,
-        coroutineContext: CoroutineContext = Dispatchers.Default,
+    override fun broadcast(
+        gasAmount: ULong?,
+        feeDenomination: String?,
+        coroutineContext: CoroutineContext,
         transactionBuilder: Transaction.Builder.() -> Unit,
     ) = broadcast(Transaction.builder().apply(transactionBuilder).build(), gasAmount, feeDenomination, coroutineContext)
 }

@@ -66,7 +66,6 @@ class LocalCachedAccountInfoProvider(
 private fun money.terra.client.api.AccountInfo.toModel() = AccountInfo(
     address,
     accountNumber,
-    coins,
     publicKey,
     sequence,
 )

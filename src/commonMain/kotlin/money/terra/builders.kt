@@ -170,7 +170,8 @@ class ProviderBuilderImpl(
     private val client: TerraClient = clientBuilder.client!!
 
     internal var accountInfoProvider: AccountInfoProvider = AlwaysFetchAccountInfoProvider(client)
-    internal var gasPricesProvider: GasPricesProvider? = if (client is TerraFcdClient) GasPricesFcdProvider(client) else null
+    internal var gasPricesProvider: GasPricesProvider? =
+        if (client is TerraFcdClient) GasPricesFcdProvider(client) else null
     internal var semaphoreProvider: SemaphoreProvider? = null
 
     override fun accountInfo(accountInfoProvider: AccountInfoProvider): ProviderAndTransactionToolBuilder {
@@ -230,7 +231,8 @@ class ProviderBuilderImpl(
         return this
     }
 
-    override fun transactionTool(): TransactionToolAndBroadcasterBuilder = TransactionToolBuilderImpl(clientBuilder, this)
+    override fun transactionTool(): TransactionToolAndBroadcasterBuilder =
+        TransactionToolBuilderImpl(clientBuilder, this)
 
     override fun feeEstimator(feeEstimator: FeeEstimator) = transactionTool().feeEstimator(feeEstimator)
 
@@ -250,11 +252,10 @@ class TransactionToolBuilderImpl(
 
     private val chainId: String = clientBuilder.chainId!!
     private val client: TerraClient = clientBuilder.client!!
-    private val accountInfoProvider: AccountInfoProvider = providerBuilder.accountInfoProvider
     private val gasPricesProvider: GasPricesProvider? = providerBuilder.gasPricesProvider
 
     internal var feeEstimator: FeeEstimator? = gasPricesProvider?.let { NodeFeeEstimator(client.transactionApi, it) }
-    internal var signer: TransactionSigner = TransactionSigner(chainId, accountInfoProvider)
+    internal var signer: TransactionSigner = TransactionSigner(chainId)
 
     override fun feeEstimator(feeEstimator: FeeEstimator): TransactionToolAndBroadcasterBuilder {
         this.feeEstimator = feeEstimator
@@ -275,7 +276,7 @@ class TransactionToolBuilderImpl(
     }
 
     override fun defaultSigner(): TransactionToolAndBroadcasterBuilder {
-        this.signer = TransactionSigner(chainId, accountInfoProvider)
+        this.signer = TransactionSigner(chainId)
 
         return this
     }
@@ -293,6 +294,7 @@ class TransactionToolBuilderImpl(
     override fun connect() = broadcaster().connect()
 }
 
+@Suppress("CanBeParameter", "MemberVisibilityCanBePrivate")
 class BroadcasterBuilderImpl(
     internal val clientBuilder: ClientBuilderImpl,
     internal val providerBuilder: ProviderBuilderImpl,
@@ -301,12 +303,14 @@ class BroadcasterBuilderImpl(
 
     private val chainId: String = clientBuilder.chainId!!
     private val client: TerraClient = clientBuilder.client!!
+    private val accountInfoProvider: AccountInfoProvider = providerBuilder.accountInfoProvider
     private val semaphoreProvider: SemaphoreProvider? = providerBuilder.semaphoreProvider
     private val feeEstimator: FeeEstimator? = transactionToolBuilder.feeEstimator
     private val signer: TransactionSigner = transactionToolBuilder.signer
 
     internal var broadcaster: Broadcaster<out BroadcastResult> = SyncBroadcaster(
         client.transactionApi,
+        accountInfoProvider,
         signer,
         feeEstimator,
         semaphoreProvider,
@@ -319,19 +323,37 @@ class BroadcasterBuilderImpl(
     }
 
     override fun async(): BroadcasterBuilder {
-        broadcaster = AsyncBroadcaster(client.transactionApi, signer, feeEstimator, semaphoreProvider)
+        broadcaster = AsyncBroadcaster(
+            client.transactionApi,
+            accountInfoProvider,
+            signer,
+            feeEstimator,
+            semaphoreProvider,
+        )
 
         return this
     }
 
     override fun sync(): BroadcasterBuilder {
-        broadcaster = SyncBroadcaster(client.transactionApi, signer, feeEstimator, semaphoreProvider)
+        broadcaster = SyncBroadcaster(
+            client.transactionApi,
+            accountInfoProvider,
+            signer,
+            feeEstimator,
+            semaphoreProvider,
+        )
 
         return this
     }
 
     override fun block(): BroadcasterBuilder {
-        broadcaster = BlockBroadcaster(client.transactionApi, signer, feeEstimator, semaphoreProvider)
+        broadcaster = BlockBroadcaster(
+            client.transactionApi,
+            accountInfoProvider,
+            signer,
+            feeEstimator,
+            semaphoreProvider,
+        )
 
         return this
     }

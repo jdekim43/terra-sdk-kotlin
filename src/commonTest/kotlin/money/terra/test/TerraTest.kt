@@ -17,11 +17,11 @@ import kotlin.test.assertTrue
 
 class TerraTest {
 
-    private val client = HttpClient("https://tequila-fcd.terra.dev", logConfig = {
+    private val client = HttpClient("https://bombay-fcd.terra.dev", logConfig = {
         level = LogLevel.ALL
         logger = Logger.SIMPLE
     })
-    private val terraBuilder = Terra.fcd("tequila-0004", client).localCachedAccountInfo().transactionTool()
+    private val terraBuilder = Terra.fcd("bombay-0008", client).localCachedAccountInfo().transactionTool()
 
     @Test
     fun broadcastAsync() = runBlockingTest {

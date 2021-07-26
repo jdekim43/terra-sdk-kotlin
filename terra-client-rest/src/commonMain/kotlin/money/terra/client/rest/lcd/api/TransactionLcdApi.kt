@@ -11,12 +11,14 @@ import money.terra.client.api.*
 import money.terra.client.model.Result
 import money.terra.client.rest.HttpClient
 import money.terra.model.CoinDecimal
+import money.terra.model.Message
 import money.terra.model.Transaction
 import money.terra.model.TransactionResult
 import money.terra.transaction.tool.EstimateFeeException
 
 class TransactionLcdApi(
     private val client: HttpClient,
+    private val chainId: String,
 ) : TransactionApi {
 
     override fun getByHash(
@@ -46,17 +48,37 @@ class TransactionLcdApi(
     }
 
     override fun estimateFee(
-        transaction: Transaction,
-        gasAdjustment: Float,
+        messages: List<Message>,
+        senderAddress: String,
+        senderAccountNumber: ULong,
+        senderSequence: ULong,
         gasPrices: List<CoinDecimal>,
+        gasAdjustment: Float,
     ): Deferred<Result<EstimateFeeResult>> = CoroutineScope(Dispatchers.Unconfined).async {
         try {
             client.post<Result<EstimateFeeResult>>(
                 "/txs/estimate_fee",
-                EstimateFeeRequest(transaction, gasAdjustment.toString(), gasPrices),
+                EstimateFeeRequest(
+                    messages,
+                    chainId,
+                    senderAddress,
+                    senderAccountNumber,
+                    senderSequence,
+                    gasPrices,
+                    gasAdjustment,
+                ),
             ).await()
         } catch (e: ServerResponseException) {
-            throw EstimateFeeException(transaction, gasPrices, gasAdjustment, e.response.readText(), e)
+            throw EstimateFeeException(
+                messages,
+                senderAddress,
+                senderAccountNumber,
+                senderSequence,
+                gasPrices,
+                gasAdjustment,
+                e.response.readText(),
+                e,
+            )
         }
     }
 }

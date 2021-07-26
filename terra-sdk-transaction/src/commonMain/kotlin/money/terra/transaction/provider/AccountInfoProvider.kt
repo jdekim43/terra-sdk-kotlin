@@ -19,7 +19,6 @@ interface AccountInfoProvider {
 data class AccountInfo(
     val address: String,
     @SerialName("account_number") @Serializable(ULongAsStringSerializer::class) val accountNumber: ULong = 0u,
-    val coins: List<Coin> = emptyList(),
     @SerialName("public_key") val publicKey: PublicKey? = null,
     @Serializable(ULongAsStringSerializer::class) val sequence: ULong = 0u,
 )

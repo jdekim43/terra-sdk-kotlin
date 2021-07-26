@@ -5,6 +5,7 @@ import money.terra.client.rest.DEFAULT_TIMEOUT_MILLIS
 import money.terra.client.rest.HttpClient
 import money.terra.client.rest.lcd.api.*
 
+@Suppress("CanBeParameter")
 open class TerraLcdClient(
     val chainId: String,
     val httpClient: HttpClient,
@@ -19,7 +20,7 @@ open class TerraLcdClient(
     override val authApi = AuthLcdApi(httpClient)
     override val bankApi = BankLcdApi(httpClient)
     override val marketApi = MarketLcdApi(httpClient)
-    override val transactionApi = TransactionLcdApi(httpClient)
+    override val transactionApi = TransactionLcdApi(httpClient, chainId)
     override val treasuryApi = TreasuryLcdApi(httpClient)
     override val wasmApi = WasmLcdApi(httpClient)
 }

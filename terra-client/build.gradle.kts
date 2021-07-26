@@ -7,6 +7,11 @@ version = rootProject.version
 
 kotlin {
     sourceSets {
+        all {
+            languageSettings {
+                useExperimentalAnnotation("kotlin.RequiresOptIn")
+            }
+        }
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")

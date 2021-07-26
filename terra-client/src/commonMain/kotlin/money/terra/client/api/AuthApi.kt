@@ -18,7 +18,6 @@ interface AuthApi {
 data class AccountInfo(
     @SerialName("account_number") @Serializable(ULongAsStringSerializer::class) val accountNumber: ULong,
     val address: String,
-    val coins: List<Coin>,
     @SerialName("public_key") val publicKey: PublicKey?,
     @Serializable(ULongAsStringSerializer::class) val sequence: ULong,
 )

@@ -13,12 +13,12 @@ import kotlin.coroutines.CoroutineContext
 class ThrottleBroadcaster<Result : BroadcastResult>(
     private val delegate: Broadcaster<Result>,
     val queue: BroadcastQueue<Result> = LocalBroadcastQueue(),
-    val broadcastLockReleaser: BroadcastLockReleaser = StaticIntervalBroadcastLockReleaser(6),
+    @Suppress("CanBeParameter") val broadcastLockReleaser: BroadcastLockReleaser = StaticIntervalBroadcastLockReleaser(6),
     var messageWaitMillis: Long = 0,
     val maxTransactionPerBlock: Int = Int.MAX_VALUE,
     val maxMessagePerTransaction: Int = Int.MAX_VALUE,
     override val coroutineContext: CoroutineContext = Dispatchers.Default,
-) : Broadcaster<Result>(delegate.signer, delegate.feeEstimator, delegate.semaphore), CoroutineScope {
+) : Broadcaster<Result>(delegate.accountInfoProvider, delegate.signer, delegate.feeEstimator, delegate.semaphore), CoroutineScope {
 
     private val broadcastSemaphore = Semaphore(maxTransactionPerBlock)
 
@@ -299,6 +299,7 @@ class LocalBroadcastQueue<Result : BroadcastResult>(
 
     override suspend fun pushMessage(item: MessageQueueItem<Result>) = messageQueue.send(item)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun isEmptyMessageQueue(): Boolean = messageQueue.isEmpty
 }
 

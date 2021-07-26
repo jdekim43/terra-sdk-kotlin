@@ -6,7 +6,13 @@ group = rootProject.group
 version = rootProject.version
 
 kotlin {
+    @Suppress("UNUSED_VARIABLE")
     sourceSets {
+        all {
+            languageSettings {
+                useExperimentalAnnotation("kotlin.RequiresOptIn")
+            }
+        }
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")

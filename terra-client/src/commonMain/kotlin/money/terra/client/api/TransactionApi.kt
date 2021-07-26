@@ -3,6 +3,7 @@ package money.terra.client.api
 import kotlinx.coroutines.Deferred
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import money.terra.client.model.BaseRequest
 import money.terra.client.model.Result
 import money.terra.model.*
 import money.terra.transaction.broadcaster.BroadcastResult
@@ -19,9 +20,12 @@ interface TransactionApi {
     fun broadcastBlock(transaction: Transaction): Deferred<BroadcastBlockResult>
 
     fun estimateFee(
-        transaction: Transaction,
-        gasAdjustment: Float,
+        messages: List<Message>,
+        senderAddress: String,
+        senderAccountNumber: ULong,
+        senderSequence: ULong,
         gasPrices: List<CoinDecimal>,
+        gasAdjustment: Float,
     ): Deferred<Result<EstimateFeeResult>>
 }
 
@@ -80,16 +84,34 @@ data class BroadcastBlockResult(
 
 @Serializable
 data class EstimateFeeRequest(
-    @SerialName("tx") val transaction: Transaction,
-    @SerialName("gas_adjustment") val gasAdjustment: String,
-    @SerialName("gas_prices") val gasPrices: List<CoinDecimal>,
-)
+    @SerialName("base_req") val baseRequest: BaseRequest,
+    @SerialName("msgs") val messages: List<Message>,
+) {
+
+    constructor(
+        messages: List<Message>,
+        chainId: String,
+        requester: String,
+        requesterAccountNumber: ULong,
+        requesterSequence: ULong,
+        gasPrices: List<CoinDecimal>,
+        gasAdjustment: Float,
+    ) : this(
+        BaseRequest(
+            fromAddress = requester,
+            memo = "",
+            chainId = chainId,
+            accountNumber = requesterAccountNumber,
+            sequence = requesterSequence,
+            gasPrices = gasPrices,
+            gasAdjustment = gasAdjustment.toString(),
+            gas = "auto",
+        ),
+        messages,
+    )
+}
 
 @Serializable
 data class EstimateFeeResult(
-    val fees: List<Coin>,
-    @Serializable(ULongAsStringSerializer::class) val gas: ULong,
-) {
-
-    fun asFee() = Fee(gas, fees)
-}
+    val fee: Fee,
+)

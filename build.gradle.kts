@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "kr.jadekim"
-version = "0.10.1"
+version = "0.11.1"
 
 allprojects {
     apply {
@@ -40,6 +40,7 @@ allprojects {
             }
         }
 
+        @Suppress("UNUSED_VARIABLE")
         sourceSets {
             val commonMain by getting {
                 dependencies {
@@ -86,6 +87,7 @@ allprojects {
 }
 
 kotlin {
+    @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val commonMain by getting {
             dependencies {
