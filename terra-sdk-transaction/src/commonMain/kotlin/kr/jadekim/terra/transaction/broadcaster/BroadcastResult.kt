@@ -1,9 +1,13 @@
 package kr.jadekim.terra.transaction.broadcaster
 
+import kr.jadekim.terra.model.TransactionLog
+
 interface BroadcastResult {
-    val height: ULong
     val transactionHash: String
+    val codeSpace: String?
     val code: Int?
+    val rawLog: String?
+    val logs: List<TransactionLog>?
 }
 
 val BroadcastResult.isSuccess: Boolean

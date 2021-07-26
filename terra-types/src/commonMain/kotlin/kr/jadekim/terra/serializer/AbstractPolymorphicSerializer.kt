@@ -15,7 +15,7 @@ import kotlin.reflect.KClass
 
 @OptIn(ExperimentalSerializationApi::class)
 abstract class AbstractPolymorphicSerializer<T : Any>(
-    val baseClass: KClass<T>
+    val baseClass: KClass<T>,
 ) : KSerializer<T> {
 
     override fun serialize(encoder: Encoder, value: T) {

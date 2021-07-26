@@ -3,14 +3,17 @@ package kr.jadekim.terra.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kr.jadekim.common.util.ext.hasValue
+import kr.jadekim.terra.type.ULongAsStringSerializer
 import kotlin.jvm.JvmStatic
 
 @Serializable
+@SerialName("core/StdTx")
 data class Transaction(
     @SerialName("msg") val messages: List<Message>,
     val memo: String = "",
     val fee: Fee? = null,
     val signatures: List<Signature>? = null,
+    @SerialName("timeout_height") @Serializable(ULongAsStringSerializer::class) val timeoutHeight: ULong = 0u,
 ) {
     val isSigned: Boolean
         get() = signatures.hasValue()

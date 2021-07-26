@@ -57,29 +57,32 @@ class BroadcastBlockRequest(
 
 @Serializable
 data class BroadcastAsyncResult(
-    @Serializable(ULongAsStringSerializer::class) override val height: ULong,
     @SerialName("txhash") override val transactionHash: String,
+    @SerialName("codespace") override val codeSpace: String? = null,
     override val code: Int? = null,
+    @SerialName("raw_log") override val rawLog: String? = null,
+    override val logs: List<TransactionLog>? = null,
 ) : BroadcastResult
 
 @Serializable
 data class BroadcastSyncResult(
-    @Serializable(ULongAsStringSerializer::class) override val height: ULong,
     @SerialName("txhash") override val transactionHash: String,
+    @SerialName("codespace") override val codeSpace: String? = null,
     override val code: Int? = null,
-    @SerialName("raw_log") val rawLog: String? = null,
+    @SerialName("raw_log") override val rawLog: String? = null,
+    override val logs: List<TransactionLog>? = null,
 ) : BroadcastResult
 
 @Serializable
 data class BroadcastBlockResult(
-    @Serializable(ULongAsStringSerializer::class) override val height: ULong,
+    @Serializable(ULongAsStringSerializer::class) val height: ULong,
     @SerialName("txhash") override val transactionHash: String,
+    @SerialName("codespace") override val codeSpace: String? = null,
     override val code: Int? = null,
-    @SerialName("raw_log") val rawLog: String? = null,
-    val logs: List<TransactionLog>? = null,
+    @SerialName("raw_log") override val rawLog: String? = null,
+    override val logs: List<TransactionLog>? = null,
     val gasUsed: ULong? = null,
     val gasWanted: ULong? = null,
-    val events: List<TransactionEvent>? = null,
 ) : BroadcastResult
 
 @Serializable

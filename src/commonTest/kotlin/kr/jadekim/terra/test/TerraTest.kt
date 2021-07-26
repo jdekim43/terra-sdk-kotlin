@@ -74,7 +74,7 @@ class TerraTest {
 
     @Test
     fun failedTransaction() = runBlockingTest {
-        val terra = terraBuilder.async().connect()
+        val terra = terraBuilder.sync().connect()
         val wallet = terra.walletFromKey("008FA566B8829B68B29CC35C1EFDED3E163448722117F7D35D32A336612FE166A6")
 
         assertFailsWith(BroadcastException.FailedEstimateFee::class) {
