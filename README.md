@@ -9,7 +9,6 @@ with the Terra blockchain and provides simple abstractions over core data struct
 * Client for LCD, FCD
 * Implement tool for concurrency processing for server
 * Support customization at core classes
-* Modulize components
 
 ## Installation (w/ Gradle)
 ```
@@ -129,3 +128,17 @@ Copyright 2021 jdekim43
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 See the License for the specific language governing permissions and limitations under the License.
+
+
+##
+<details>
+ <summary>Relations</summary>
+ <ul>
+  <li><a href="https://github.com/terra-money/terra.js">terra.js</a></li>
+  <li><s><a href="https://github.com/terra-money/jigu">jigu</a></s></li>
+  <li><a href="https://github.com/terra-money/terra-sdk-python">terra-sdk-python</a></li>
+  <li><a href="#">terra-sdk-java</a></li>
+  <li><a href="https://github.com/terra-money/terra4j">terra4j</a></li>
+  <li><a href="https://github.com/terra-money/terra-core">terra-core</a></li>
+ </ul>
+</details>
