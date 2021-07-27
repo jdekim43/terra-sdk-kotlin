@@ -4,9 +4,20 @@ import kotlinx.serialization.Serializable
 import java.math.BigInteger
 
 @Serializable(Uint128Serializer::class)
-actual class Uint128 internal constructor(internal val origin: BigInteger) : Number(), Comparable<Uint128> {
+actual class Uint128 constructor(internal val origin: BigInteger) : Number(), Comparable<Uint128> {
+
+    actual companion object {
+        actual val ZERO: Uint128 = Uint128(BigInteger.ZERO)
+        actual val ONE: Uint128 = Uint128(BigInteger.ONE)
+    }
 
     actual constructor(value: String) : this(BigInteger(value))
+
+    init {
+        if (origin.signum() != 1) {
+            throw IllegalArgumentException("Can't be negative")
+        }
+    }
 
     override fun compareTo(other: Uint128): Int = origin.compareTo(other.origin)
 
@@ -29,6 +40,22 @@ actual class Uint128 internal constructor(internal val origin: BigInteger) : Num
     override fun equals(other: Any?): Boolean = origin.equals(other)
 
     override fun hashCode(): Int = origin.hashCode()
+
+    actual operator fun plus(other: Uint128): Uint128 = Uint128(origin + other.origin)
+
+    actual operator fun minus(other: Uint128): Uint128 = Uint128(origin - other.origin)
+
+    actual operator fun times(other: Uint128): Uint128 = Uint128(origin * other.origin)
+
+    actual operator fun div(other: Uint128): Uint128 = Uint128(origin / other.origin)
+
+    actual operator fun rem(other: Uint128): Uint128 = Uint128(origin % other.origin)
 }
 
-actual operator fun Uint128.times(other: Uint128): Uint128 = Uint128(origin.multiply(other.origin))
+fun BigInteger.asUint128() = Uint128(this)
+
+fun Uint128.asBigInteger() = origin
+
+actual fun Uint128.toDecimal(): Decimal = origin.toBigDecimal().asDecimal()
+
+actual fun Uint128.scaled(scale: Int): Decimal = origin.toBigDecimal(scale).asDecimal()

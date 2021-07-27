@@ -5,7 +5,12 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 @Serializable(DecimalSerializer::class)
-actual class Decimal internal constructor(internal val origin: BigDecimal) : Number(), Comparable<Decimal> {
+actual class Decimal constructor(internal val origin: BigDecimal) : Number(), Comparable<Decimal> {
+
+    actual companion object {
+        actual val ZERO: Decimal = Decimal(BigDecimal.ZERO)
+        actual val ONE: Decimal = Decimal(BigDecimal.ONE)
+    }
 
     actual constructor(value: String) : this(BigDecimal(value))
 
@@ -30,10 +35,26 @@ actual class Decimal internal constructor(internal val origin: BigDecimal) : Num
     override fun equals(other: Any?): Boolean = origin.equals(other)
 
     override fun hashCode(): Int = origin.hashCode()
+
+    actual operator fun plus(other: Decimal): Decimal = Decimal(origin + other.origin)
+
+    actual operator fun minus(other: Decimal): Decimal = Decimal(origin - other.origin)
+
+    actual operator fun times(other: Decimal): Decimal = Decimal(origin * other.origin)
+
+    actual operator fun div(other: Decimal): Decimal = Decimal(origin / other.origin)
+
+    actual operator fun rem(other: Decimal): Decimal = Decimal(origin % other.origin)
 }
 
-actual operator fun Decimal.times(other: Decimal): Decimal = Decimal(origin.multiply(other.origin))
+fun BigDecimal.asDecimal() = Decimal(this)
 
-actual fun Decimal.ceil(): Decimal = Decimal(origin.setScale(0, RoundingMode.CEILING))
+fun Decimal.asBigDecimal() = origin
 
-actual fun Decimal.toUint128(): Uint128 = Uint128(origin.toBigInteger())
+actual operator fun Decimal.times(other: Uint128): Decimal = origin.multiply(other.origin.toBigDecimal()).asDecimal()
+
+actual fun Decimal.ceil(): Decimal = origin.setScale(0, RoundingMode.CEILING).asDecimal()
+
+actual fun Decimal.toUint128(): Uint128 = origin.toBigInteger().asUint128()
+
+actual fun Decimal.unscaled(scale: Int): Uint128 = origin.setScale(scale).unscaledValue().asUint128()
