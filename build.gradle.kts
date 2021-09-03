@@ -1,10 +1,10 @@
 plugins {
-    kotlin("multiplatform") version "1.5.21"
+    kotlin("multiplatform") version "1.5.30"
     id("maven-publish")
 }
 
 group = "kr.jadekim"
-version = "0.11.2-rc7"
+version = "0.11.2-rc9"
 
 allprojects {
     apply {

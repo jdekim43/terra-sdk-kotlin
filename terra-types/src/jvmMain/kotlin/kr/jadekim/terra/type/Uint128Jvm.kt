@@ -14,7 +14,7 @@ actual class Uint128 constructor(internal val origin: BigInteger) : Number(), Co
     actual constructor(value: String) : this(BigInteger(value))
 
     init {
-        if (origin.signum() != 1) {
+        if (origin.signum() == -1) {
             throw IllegalArgumentException("Can't be negative")
         }
     }
