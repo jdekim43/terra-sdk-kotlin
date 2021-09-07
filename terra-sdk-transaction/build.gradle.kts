@@ -1,5 +1,5 @@
 plugins {
-    kotlin("plugin.serialization") version "1.5.21"
+    kotlin("plugin.serialization") version "1.5.30"
 }
 
 group = rootProject.group
@@ -15,9 +15,13 @@ kotlin {
         }
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
-                implementation("kr.jadekim:common-util:1.2.1-rc3")
+                val kotlinxCoroutineVersion: String by project
+                val kotlinxSerializationVersion: String by project
+                val commonUtilVersion: String by project
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutineVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
+                implementation("kr.jadekim:common-util:$commonUtilVersion")
 
                 api(project(":terra-types"))
                 implementation(project(":terra-wallet"))

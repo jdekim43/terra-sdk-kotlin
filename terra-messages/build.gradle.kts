@@ -1,5 +1,5 @@
 plugins {
-    kotlin("plugin.serialization") version "1.5.21"
+    kotlin("plugin.serialization") version "1.5.30"
 }
 
 group = rootProject.group
@@ -10,9 +10,13 @@ kotlin {
         @Suppress("UNUSED_VARIABLE")
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
-                implementation("kr.jadekim:common-util:1.2.1-rc3")
+                val kotlinxSerializationVersion: String by project
+                val kotlinxDatetimeVersion: String by project
+                val commonUtilVersion: String by project
+
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDatetimeVersion")
+                implementation("kr.jadekim:common-util:$commonUtilVersion")
 
                 api(project(":terra-types"))
             }

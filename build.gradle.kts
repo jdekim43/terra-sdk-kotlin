@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "kr.jadekim"
-version = "0.11.2-rc9"
+version = "0.12.1"
 
 allprojects {
     apply {
@@ -16,19 +16,6 @@ allprojects {
         mavenCentral()
         maven("https://jadekim.jfrog.io/artifactory/maven/")
     }
-
-//    configurations.all {
-//        resolutionStrategy.dependencySubstitution.all {
-//            requested.let {
-//                if (it is ModuleComponentSelector && it.group == rootProject.group && it.version == rootProject.version) {
-//                    val targetProject = findProject(":${it.module}")
-//                    if (targetProject != null) {
-//                        useTarget(targetProject)
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     kotlin {
         jvm {
@@ -60,10 +47,13 @@ allprojects {
             }
             val jvmTest by getting {
                 dependencies {
+                    val junitVersion: String by project
+
                     implementation(kotlin("test-junit5"))
-                    runtimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
-                    compileOnly("org.junit.jupiter:junit-jupiter-api:5.7.2")
-                    compileOnly("org.junit.jupiter:junit-jupiter-params:5.7.2")
+
+                    runtimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+                    compileOnly("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+                    compileOnly("org.junit.jupiter:junit-jupiter-params:$junitVersion")
                 }
             }
         }
@@ -91,9 +81,13 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
-                implementation("kr.jadekim:common-util:1.2.1-rc3")
+                val kotlinxCoroutineVersion: String by project
+                val kotlinxSerializationVersion: String by project
+                val commonUtilVersion: String by project
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutineVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
+                implementation("kr.jadekim:common-util:$commonUtilVersion")
 
                 api(project(":terra-wallet"))
                 api(project(":terra-sdk-transaction"))
@@ -105,7 +99,9 @@ kotlin {
         }
         val commonTest by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-logging:1.6.1")
+                val ktorVersion: String by project
+
+                implementation("io.ktor:ktor-client-logging:$ktorVersion")
 
                 implementation(project(":terra-client-rest"))
             }
