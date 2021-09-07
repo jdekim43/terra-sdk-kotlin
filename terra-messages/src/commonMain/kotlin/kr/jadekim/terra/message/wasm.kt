@@ -9,7 +9,7 @@ import kotlinx.serialization.modules.subclass
 import kr.jadekim.common.util.encoder.encodeBase64
 import kr.jadekim.terra.model.Coin
 import kr.jadekim.terra.model.Message
-import kr.jadekim.terra.model.WrappedMessage
+import kr.jadekim.terra.model.EnumMessage
 import kr.jadekim.terra.type.ULongAsStringSerializer
 
 val WasmSerializerModule = SerializersModule {
@@ -64,7 +64,7 @@ data class InstantiateContractMessage(
 data class ExecuteContractMessage(
     val sender: String,
     val contract: String,
-    @SerialName("execute_msg") val message: WrappedMessage,
+    @SerialName("execute_msg") val message: EnumMessage,
     @SerialName("coins") val funds: List<Coin> = emptyList(),
 ) : Message()
 
