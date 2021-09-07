@@ -10,17 +10,16 @@ import kr.jadekim.terra.transaction.provider.SemaphoreProvider
 import kr.jadekim.terra.transaction.provider.withPermit
 import kr.jadekim.terra.transaction.tool.EstimateFeeException
 import kr.jadekim.terra.transaction.tool.FeeEstimator
-import kr.jadekim.terra.transaction.tool.TransactionSigner
-import kr.jadekim.terra.transaction.tool.sign
-import kr.jadekim.terra.wallet.OwnTerraWallet
 import kr.jadekim.terra.wallet.TerraWallet
+import kr.jadekim.terra.wallet.TransactionSignData
+import kr.jadekim.terra.wallet.sign
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlin.math.min
 
 abstract class Broadcaster<Result : BroadcastResult>(
+    var chainId: String,
     var accountInfoProvider: AccountInfoProvider,
-    var signer: TransactionSigner,
     var feeEstimator: FeeEstimator? = null,
     var semaphore: SemaphoreProvider? = null,
 ) {
@@ -65,21 +64,6 @@ abstract class Broadcaster<Result : BroadcastResult>(
     )
 
     open fun broadcast(
-        senderWallet: OwnTerraWallet,
-        message: Message,
-        memo: String = "",
-        gasAmount: ULong? = null,
-        feeDenomination: String? = null,
-        coroutineContext: CoroutineContext = Dispatchers.Default,
-    ) = broadcast(
-        senderWallet,
-        Transaction(listOf(message), memo),
-        gasAmount,
-        feeDenomination,
-        coroutineContext,
-    )
-
-    open fun broadcast(
         senderWallet: TerraWallet,
         transaction: Transaction,
         gasAmount: ULong? = null,
@@ -118,54 +102,6 @@ abstract class Broadcaster<Result : BroadcastResult>(
                     senderWallet,
                     accountInfo!!.accountNumber,
                     accountInfo!!.sequence,
-                    signer,
-                ).await()
-            }
-
-            broadcast(_transaction).await()
-        } to _transaction
-    }
-
-    open fun broadcast(
-        senderWallet: OwnTerraWallet,
-        transaction: Transaction,
-        gasAmount: ULong? = null,
-        feeDenomination: String? = null,
-        coroutineContext: CoroutineContext = Dispatchers.Default,
-    ): Deferred<Pair<Result, Transaction>> = CoroutineScope(coroutineContext).async {
-        @Suppress("LocalVariableName")
-        var _transaction = transaction
-        var accountInfo: AccountInfo? = null
-
-        if (_transaction.fee == null) {
-            if (feeEstimator == null) {
-                throw BroadcastException.EmptyFee
-            }
-
-            accountInfo = accountInfoProvider.get(senderWallet.address)
-
-            _transaction = try {
-                if (gasAmount == null) {
-                    _transaction.estimateFee(accountInfo, feeDenomination).await()
-                } else {
-                    _transaction.estimateFee(gasAmount, feeDenomination).await()
-                }
-            } catch (e: EstimateFeeException) {
-                throw BroadcastException.FailedEstimateFee(e)
-            }
-        }
-
-        semaphore.lockWallet<Result>(senderWallet.address) {
-            if (!_transaction.isSigned) {
-                if (accountInfo == null) {
-                    accountInfo = accountInfoProvider.get(senderWallet.address)
-                }
-
-                _transaction = _transaction.sign(
-                    senderWallet,
-                    accountInfo!!.accountNumber,
-                    accountInfo!!.sequence,
-                    signer,
                 ).await()
             }
 
@@ -251,5 +187,21 @@ abstract class Broadcaster<Result : BroadcastResult>(
         val fee = feeEstimator!!.estimate(gasAmount, feeDenomination ?: feeEstimator!!.defaultFeeDenomination)
 
         this@estimateFee.copy(fee = fee, signatures = null)
+    }
+
+    private fun Transaction.sign(
+        wallet: TerraWallet,
+        accountNumber: ULong,
+        sequence: ULong,
+        dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    ): Deferred<Transaction> = CoroutineScope(dispatcher).async {
+        val signatures = signatures?.toMutableList() ?: mutableListOf()
+
+        val signData = TransactionSignData(this@sign, chainId, accountNumber, sequence)
+        val signature = wallet.key?.sign(signData)?.await() ?: throw IllegalArgumentException("Wallet hasn't key")
+
+        signatures.add(signature)
+
+        copy(signatures = signatures)
     }
 }

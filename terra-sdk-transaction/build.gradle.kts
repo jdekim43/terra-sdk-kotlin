@@ -17,10 +17,10 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
-                implementation("kr.jadekim:common-util:1.1.16")
+                implementation("kr.jadekim:common-util:1.2.1-rc3")
 
-                api("${rootProject.group}:terra-types:${rootProject.version}")
-                implementation("${rootProject.group}:terra-wallet:${rootProject.version}")
+                api(project(":terra-types"))
+                implementation(project(":terra-wallet"))
             }
         }
     }

@@ -19,12 +19,12 @@ class TerraTest {
         level = LogLevel.ALL
         logger = Logger.SIMPLE
     })
-    private val terraBuilder = Terra.fcd("bombay-0008", client).localCachedAccountInfo().transactionTool()
+    private val terraBuilder = Terra.fcd("bombay-10", client).localCachedAccountInfo().transactionTool()
 
     @Test
     fun broadcastAsync() = runBlockingTest {
         val terra = terraBuilder.async().connect()
-        val wallet = terra.walletFromKey("008FA566B8829B68B29CC35C1EFDED3E163448722117F7D35D32A336612FE166A6")
+        val wallet = terra.walletFromRawKey("008FA566B8829B68B29CC35C1EFDED3E163448722117F7D35D32A336612FE166A6")
 
         val (broadcastResult, transaction) = wallet.broadcast {
             SendMessage(wallet.address, wallet.address, listOf(Coin("uluna", Uint128("1")))).withThis()
@@ -41,7 +41,7 @@ class TerraTest {
     @Test
     fun broadcastSync() = runBlockingTest {
         val terra = terraBuilder.sync().connect()
-        val wallet = terra.walletFromKey("008FA566B8829B68B29CC35C1EFDED3E163448722117F7D35D32A336612FE166A6")
+        val wallet = terra.walletFromRawKey("008FA566B8829B68B29CC35C1EFDED3E163448722117F7D35D32A336612FE166A6")
 
         val (broadcastResult, transaction) = wallet.broadcast {
             SendMessage(wallet.address, wallet.address, listOf(Coin("uluna", Uint128("1")))).withThis()
@@ -58,7 +58,7 @@ class TerraTest {
     @Test
     fun broadcastBlock() = runBlockingTest {
         val terra = terraBuilder.block().connect()
-        val wallet = terra.walletFromKey("008FA566B8829B68B29CC35C1EFDED3E163448722117F7D35D32A336612FE166A6")
+        val wallet = terra.walletFromRawKey("008FA566B8829B68B29CC35C1EFDED3E163448722117F7D35D32A336612FE166A6")
 
         val (broadcastResult, transaction) = wallet.broadcast {
             SendMessage(wallet.address, wallet.address, listOf(Coin("uluna", Uint128("1")))).withThis()
@@ -75,7 +75,7 @@ class TerraTest {
     @Test
     fun failedTransaction() = runBlockingTest {
         val terra = terraBuilder.sync().connect()
-        val wallet = terra.walletFromKey("008FA566B8829B68B29CC35C1EFDED3E163448722117F7D35D32A336612FE166A6")
+        val wallet = terra.walletFromRawKey("008FA566B8829B68B29CC35C1EFDED3E163448722117F7D35D32A336612FE166A6")
 
         assertFailsWith(BroadcastException.FailedEstimateFee::class) {
             wallet.broadcast {

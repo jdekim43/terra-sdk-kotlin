@@ -17,18 +17,18 @@ allprojects {
         maven("https://jadekim.jfrog.io/artifactory/maven/")
     }
 
-    configurations.all {
-        resolutionStrategy.dependencySubstitution.all {
-            requested.let {
-                if (it is ModuleComponentSelector && it.group == rootProject.group && it.version == rootProject.version) {
-                    val targetProject = findProject(":${it.module}")
-                    if (targetProject != null) {
-                        useTarget(targetProject)
-                    }
-                }
-            }
-        }
-    }
+//    configurations.all {
+//        resolutionStrategy.dependencySubstitution.all {
+//            requested.let {
+//                if (it is ModuleComponentSelector && it.group == rootProject.group && it.version == rootProject.version) {
+//                    val targetProject = findProject(":${it.module}")
+//                    if (targetProject != null) {
+//                        useTarget(targetProject)
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     kotlin {
         jvm {
@@ -93,21 +93,21 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
-                implementation("kr.jadekim:common-util:1.1.16")
+                implementation("kr.jadekim:common-util:1.2.1-rc3")
 
-                api("${rootProject.group}:terra-wallet:${rootProject.version}")
-                api("${rootProject.group}:terra-sdk-transaction:${rootProject.version}")
-                api("${rootProject.group}:terra-client:${rootProject.version}")
-                api("${rootProject.group}:terra-messages:${rootProject.version}")
+                api(project(":terra-wallet"))
+                api(project(":terra-sdk-transaction"))
+                api(project(":terra-client"))
+                api(project(":terra-messages"))
 
-                compileOnly("${rootProject.group}:terra-client-rest:$version")
+                compileOnly(project(":terra-client-rest"))
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-logging:1.6.1")
 
-                implementation("${rootProject.group}:terra-client-rest:${rootProject.version}")
+                implementation(project(":terra-client-rest"))
             }
         }
     }

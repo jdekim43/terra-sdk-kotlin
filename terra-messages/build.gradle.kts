@@ -12,9 +12,9 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
-                implementation("kr.jadekim:common-util:1.1.16")
+                implementation("kr.jadekim:common-util:1.2.1-rc3")
 
-                api("${rootProject.group}:terra-types:${rootProject.version}")
+                api(project(":terra-types"))
             }
         }
     }

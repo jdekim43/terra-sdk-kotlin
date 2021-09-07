@@ -7,16 +7,15 @@ import kr.jadekim.terra.model.Transaction
 import kr.jadekim.terra.transaction.broadcaster.Broadcaster
 import kr.jadekim.terra.transaction.provider.AccountInfoProvider
 import kr.jadekim.terra.transaction.tool.FeeEstimator
-import kr.jadekim.terra.transaction.tool.TransactionSigner
 import kr.jadekim.terra.transaction.provider.SemaphoreProvider
 
 class AsyncBroadcaster(
+    chainId: String,
     private val transactionApi: TransactionApi,
     accountInfoProvider: AccountInfoProvider,
-    signer: TransactionSigner,
     feeEstimator: FeeEstimator? = null,
     semaphore: SemaphoreProvider? = null,
-) : Broadcaster<BroadcastAsyncResult>(accountInfoProvider, signer, feeEstimator, semaphore) {
+) : Broadcaster<BroadcastAsyncResult>(chainId, accountInfoProvider, feeEstimator, semaphore) {
 
     override suspend fun requestBroadcast(transaction: Transaction): BroadcastAsyncResult {
         return transactionApi.broadcastAsync(transaction).await()

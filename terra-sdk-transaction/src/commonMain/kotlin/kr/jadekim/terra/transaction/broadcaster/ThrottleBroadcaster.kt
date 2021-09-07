@@ -6,7 +6,6 @@ import kotlinx.coroutines.sync.Semaphore
 import kr.jadekim.common.util.ext.sequentialGroupBy
 import kr.jadekim.terra.model.Message
 import kr.jadekim.terra.model.Transaction
-import kr.jadekim.terra.wallet.OwnTerraWallet
 import kr.jadekim.terra.wallet.TerraWallet
 import kotlin.coroutines.CoroutineContext
 
@@ -18,7 +17,8 @@ class ThrottleBroadcaster<Result : BroadcastResult>(
     val maxTransactionPerBlock: Int = Int.MAX_VALUE,
     val maxMessagePerTransaction: Int = Int.MAX_VALUE,
     override val coroutineContext: CoroutineContext = Dispatchers.Default,
-) : Broadcaster<Result>(delegate.accountInfoProvider, delegate.signer, delegate.feeEstimator, delegate.semaphore), CoroutineScope {
+) : Broadcaster<Result>(delegate.chainId, delegate.accountInfoProvider, delegate.feeEstimator, delegate.semaphore),
+    CoroutineScope {
 
     private val broadcastSemaphore = Semaphore(maxTransactionPerBlock)
 
@@ -81,63 +81,7 @@ class ThrottleBroadcaster<Result : BroadcastResult>(
     }
 
     override fun broadcast(
-        senderWallet: OwnTerraWallet,
-        message: Message,
-        memo: String,
-        gasAmount: ULong?,
-        feeDenomination: String?,
-        coroutineContext: CoroutineContext,
-    ): Deferred<Pair<Result, Transaction>> {
-        val result = CompletableDeferred<Pair<Result, Transaction>>()
-        val queueItem = MessageQueueItem(
-            senderWallet,
-            message,
-            memo,
-            gasAmount,
-            feeDenomination,
-            result,
-        )
-
-        launch {
-            queue.pushMessage(queueItem)
-        }.invokeOnCompletion {
-            if (it != null) {
-                result.completeExceptionally(it)
-            }
-        }
-
-        return result
-    }
-
-    override fun broadcast(
         senderWallet: TerraWallet,
-        transaction: Transaction,
-        gasAmount: ULong?,
-        feeDenomination: String?,
-        coroutineContext: CoroutineContext,
-    ): Deferred<Pair<Result, Transaction>> {
-        val result = CompletableDeferred<Pair<Result, Transaction>>()
-        val queueItem = TransactionQueueItem(
-            senderWallet,
-            transaction.copy(signatures = null),
-            gasAmount,
-            feeDenomination,
-            result,
-        )
-
-        launch {
-            queue.pushTransaction(queueItem)
-        }.invokeOnCompletion {
-            if (it != null) {
-                result.completeExceptionally(it)
-            }
-        }
-
-        return result
-    }
-
-    override fun broadcast(
-        senderWallet: OwnTerraWallet,
         transaction: Transaction,
         gasAmount: ULong?,
         feeDenomination: String?,
@@ -173,18 +117,10 @@ class ThrottleBroadcaster<Result : BroadcastResult>(
             .message(items.map { it.message })
             .build()
 
-        if (wallet is OwnTerraWallet) {
-            return broadcast(wallet, transaction).await()
-        }
-
         return broadcast(wallet, transaction).await()
     }
 
     private suspend fun broadcast(item: TransactionQueueItem<Result>): Pair<Result, Transaction> {
-        if (item.wallet is OwnTerraWallet) {
-            return broadcast(item.wallet, item.transaction).await()
-        }
-
         return broadcast(item.wallet, item.transaction).await()
     }
 

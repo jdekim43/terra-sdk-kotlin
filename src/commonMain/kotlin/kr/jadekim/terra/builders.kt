@@ -16,7 +16,6 @@ import kr.jadekim.terra.transaction.broadcaster.BroadcastResult
 import kr.jadekim.terra.transaction.broadcaster.Broadcaster
 import kr.jadekim.terra.transaction.provider.*
 import kr.jadekim.terra.transaction.tool.FeeEstimator
-import kr.jadekim.terra.transaction.tool.TransactionSigner
 import kr.jadekim.terra.type.Decimal
 
 interface TerraBuilder {
@@ -73,10 +72,6 @@ interface TransactionToolBuilder : TerraBuilder {
     fun feeEstimator(feeEstimator: FeeEstimator): TransactionToolAndBroadcasterBuilder
 
     fun nodeFeeEstimator(client: TerraClient? = null): TransactionToolAndBroadcasterBuilder
-
-    fun signer(signer: TransactionSigner): TransactionToolAndBroadcasterBuilder
-
-    fun defaultSigner(): TransactionToolAndBroadcasterBuilder
 }
 
 interface TransactionToolAndBroadcasterBuilder : TransactionToolBuilder, BroadcasterBuilder {
@@ -238,10 +233,6 @@ class ProviderBuilderImpl(
 
     override fun nodeFeeEstimator(client: TerraClient?) = transactionTool().nodeFeeEstimator(client)
 
-    override fun signer(signer: TransactionSigner) = transactionTool().signer(signer)
-
-    override fun defaultSigner() = transactionTool().defaultSigner()
-
     override fun connect() = transactionTool().connect()
 }
 
@@ -255,7 +246,6 @@ class TransactionToolBuilderImpl(
     private val gasPricesProvider: GasPricesProvider? = providerBuilder.gasPricesProvider
 
     internal var feeEstimator: FeeEstimator? = gasPricesProvider?.let { NodeFeeEstimator(client.transactionApi, it) }
-    internal var signer: TransactionSigner = TransactionSigner(chainId)
 
     override fun feeEstimator(feeEstimator: FeeEstimator): TransactionToolAndBroadcasterBuilder {
         this.feeEstimator = feeEstimator
@@ -265,18 +255,6 @@ class TransactionToolBuilderImpl(
 
     override fun nodeFeeEstimator(client: TerraClient?): TransactionToolAndBroadcasterBuilder {
         this.feeEstimator = gasPricesProvider?.let { NodeFeeEstimator((client ?: this.client).transactionApi, it) }
-
-        return this
-    }
-
-    override fun signer(signer: TransactionSigner): TransactionToolAndBroadcasterBuilder {
-        this.signer = signer
-
-        return this
-    }
-
-    override fun defaultSigner(): TransactionToolAndBroadcasterBuilder {
-        this.signer = TransactionSigner(chainId)
 
         return this
     }
@@ -306,12 +284,11 @@ class BroadcasterBuilderImpl(
     private val accountInfoProvider: AccountInfoProvider = providerBuilder.accountInfoProvider
     private val semaphoreProvider: SemaphoreProvider? = providerBuilder.semaphoreProvider
     private val feeEstimator: FeeEstimator? = transactionToolBuilder.feeEstimator
-    private val signer: TransactionSigner = transactionToolBuilder.signer
 
     internal var broadcaster: Broadcaster<out BroadcastResult> = SyncBroadcaster(
+        chainId,
         client.transactionApi,
         accountInfoProvider,
-        signer,
         feeEstimator,
         semaphoreProvider,
     )
@@ -324,9 +301,9 @@ class BroadcasterBuilderImpl(
 
     override fun async(): BroadcasterBuilder {
         broadcaster = AsyncBroadcaster(
+            chainId,
             client.transactionApi,
             accountInfoProvider,
-            signer,
             feeEstimator,
             semaphoreProvider,
         )
@@ -336,9 +313,9 @@ class BroadcasterBuilderImpl(
 
     override fun sync(): BroadcasterBuilder {
         broadcaster = SyncBroadcaster(
+            chainId,
             client.transactionApi,
             accountInfoProvider,
-            signer,
             feeEstimator,
             semaphoreProvider,
         )
@@ -348,9 +325,9 @@ class BroadcasterBuilderImpl(
 
     override fun block(): BroadcasterBuilder {
         broadcaster = BlockBroadcaster(
+            chainId,
             client.transactionApi,
             accountInfoProvider,
-            signer,
             feeEstimator,
             semaphoreProvider,
         )

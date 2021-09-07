@@ -6,7 +6,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
-import kr.jadekim.common.util.encoder.asBase64String
+import kr.jadekim.common.util.encoder.encodeBase64
 import kr.jadekim.terra.model.Coin
 import kr.jadekim.terra.model.Message
 import kr.jadekim.terra.model.WrappedMessage
@@ -31,7 +31,7 @@ data class StoreCodeMessage(
     @SerialName("wasm_byte_code") val wasmByteCode: String,
 ) : Message() {
 
-    constructor(sender: String, wasmByteCode: ByteArray) : this(sender, wasmByteCode.asBase64String)
+    constructor(sender: String, wasmByteCode: ByteArray) : this(sender, wasmByteCode.encodeBase64())
 }
 
 @Serializable
@@ -46,7 +46,7 @@ data class MigrateCodeMessage(
         codeId: ULong,
         sender: String,
         wasmByteCode: ByteArray,
-    ) : this(codeId, sender, wasmByteCode.asBase64String)
+    ) : this(codeId, sender, wasmByteCode.encodeBase64())
 }
 
 @Serializable

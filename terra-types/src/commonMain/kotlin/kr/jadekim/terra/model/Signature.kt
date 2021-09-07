@@ -2,7 +2,7 @@ package kr.jadekim.terra.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kr.jadekim.common.util.encoder.asBase64String
+import kr.jadekim.common.util.encoder.encodeBase64
 import kr.jadekim.terra.type.ULongAsStringSerializer
 
 @Serializable
@@ -20,8 +20,8 @@ data class Signature(
         sequence: ULong? = null,
         publicKeyType: String = "tendermint/PubKeySecp256k1",
     ) : this(
-        signature.asBase64String,
-        PublicKey(publicKey.asBase64String, publicKeyType),
+        signature.encodeBase64(),
+        PublicKey(publicKey.encodeBase64(), publicKeyType),
         accountNumber,
         sequence,
     )

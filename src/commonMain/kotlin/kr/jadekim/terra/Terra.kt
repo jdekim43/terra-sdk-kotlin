@@ -4,9 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kr.jadekim.terra.client.TerraClient
 import kr.jadekim.terra.transaction.broadcaster.BroadcastResult
 import kr.jadekim.terra.transaction.broadcaster.Broadcaster
-import kr.jadekim.terra.wallet.ConnectedOwnTerraWallet
 import kr.jadekim.terra.wallet.ConnectedTerraWallet
-import kr.jadekim.terra.wallet.OwnTerraWallet
 import kr.jadekim.terra.wallet.TerraWallet
 import kotlin.coroutines.CoroutineContext
 
@@ -20,26 +18,24 @@ class Terra(
 
     fun connect(wallet: TerraWallet) = ConnectedTerraWallet(this, wallet)
 
-    fun connect(wallet: OwnTerraWallet) = ConnectedOwnTerraWallet(this, wallet)
-
     fun walletFromAddress(address: String) = ConnectedTerraWallet(this, TerraWallet(address))
 
-    fun walletFromKey(
+    fun walletFromRawKey(
         privateKey: ByteArray,
         publicKey: ByteArray? = null,
-    ) = ConnectedOwnTerraWallet(this, OwnTerraWallet(privateKey, publicKey))
+    ) = ConnectedTerraWallet(this, TerraWallet.fromRawKey(privateKey, publicKey))
 
-    fun walletFromKey(
+    fun walletFromRawKey(
         privateKey: String,
         publicKey: String? = null,
-    ) = ConnectedOwnTerraWallet(this, OwnTerraWallet(privateKey, publicKey))
+    ) = ConnectedTerraWallet(this, TerraWallet.fromRawKey(privateKey, publicKey))
 
     fun walletFromMnemonic(
         mnemonic: String,
         account: Int = 0,
         index: Int = 0,
         coinType: Int = COIN_TYPE,
-    ) = ConnectedOwnTerraWallet(this, OwnTerraWallet.from(mnemonic, account, index, coinType))
+    ) = ConnectedTerraWallet(this, TerraWallet.fromMnemonic(mnemonic, account, index, coinType))
 
     fun getTransaction(
         transactionHash: String,
