@@ -38,7 +38,7 @@ dependencies {
 }
 ```
 ```
-val client: TerraClient = TerraLcdClient("tequila-0004", "https://tequila-lcd.terra.dev")
+val client: TerraClient = TerraLcdClient("bombay-0008", "https://bombay-lcd.terra.dev")
 
 val deferredResult: Deferred<Result<Coin>> = client.marketApi.estimateSwapResult(Uint128("10000"), "uluna", "ukrw")
 val result: Coin = deferredResult.await().result
@@ -54,7 +54,7 @@ dependencies {
 ```
 ```
     val mnemonic: String = "..."
-    val terra: Terra = Terra.fcd("tequila-0004", "https://tequila-fcd.terra.dev").connect()
+    val terra: Terra = Terra.fcd("bombay-0008", "https://bombay-fcd.terra.dev").connect()
     val wallet: ConnectedOwnTerraWallet = terra.walletFromMnemonic(mnemonic)
     val receiveWallet: TerraWallet = TerraWallet("terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v")
     
@@ -86,7 +86,7 @@ dependencies {
 val mnemonic = "..."
 val wallet = OwnTerraWallet.from(mnemonic)
 val signData = TransactionSignData(
-    chainId = "tequila-0004",
+    chainId = "bombay-0008",
     accountNumber = 0u,
     sequence = 0u,
     fee = Fee(200000u, listOf(Coin(Uint128("50"), "uluna"))),
@@ -109,15 +109,15 @@ class RemoteTransactionSigner(
     accountInfoProvider: AccountInfoProvider,
 ) : TransactionSigner(chainId, accountInfoProvider) {
 
-    override suspend fun sign(accountInfo: AccountInfo, data: TransactionSignData): Signature {
+    override suspend fun sign(wallet: TerraWallet, data: TransactionSignData): Signature {
         // TODO: Implement this
     }
 }
 
-val client: TerraClient = TerraFcdClient("tequila-0004", "https://tequila-lcd.terra.dev")
+val client: TerraClient = TerraFcdClient("bombay-0008", "https://bombay-lcd.terra.dev")
 val accountInfoProvider: AccountInfoProvider = AlwaysFetchAccountInfoProvider(client)
-val signer = RemoteTransactionSigner("tequila-0004", accountInfoProvider)
-val terra = Terra.client("tequila-0004", client).provider().signer(singer).connect()
+val signer = RemoteTransactionSigner("bombay-0008", accountInfoProvider)
+val terra = Terra.client("bombay-0008", client).provider().signer(singer).connect()
 val wallet: ConnectedTerraWallet = terra.walletFromAddress("terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v")
 val (result, signedTransaction) = wallet.broadcast(...).await()
 ```

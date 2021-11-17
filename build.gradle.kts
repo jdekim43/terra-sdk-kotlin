@@ -1,10 +1,10 @@
 plugins {
-    kotlin("multiplatform") version "1.5.21"
+    kotlin("multiplatform") version "1.5.30"
     id("maven-publish")
 }
 
 group = "kr.jadekim"
-version = "0.10.1"
+version = "0.12.1"
 
 allprojects {
     apply {
@@ -17,19 +17,6 @@ allprojects {
         maven("https://jadekim.jfrog.io/artifactory/maven/")
     }
 
-    configurations.all {
-        resolutionStrategy.dependencySubstitution.all {
-            requested.let {
-                if (it is ModuleComponentSelector && it.group == rootProject.group && it.version == rootProject.version) {
-                    val targetProject = findProject(":${it.module}")
-                    if (targetProject != null) {
-                        useTarget(targetProject)
-                    }
-                }
-            }
-        }
-    }
-
     kotlin {
         jvm {
             compilations.all {
@@ -40,6 +27,7 @@ allprojects {
             }
         }
 
+        @Suppress("UNUSED_VARIABLE")
         sourceSets {
             val commonMain by getting {
                 dependencies {
@@ -59,10 +47,13 @@ allprojects {
             }
             val jvmTest by getting {
                 dependencies {
+                    val junitVersion: String by project
+
                     implementation(kotlin("test-junit5"))
-                    runtimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
-                    compileOnly("org.junit.jupiter:junit-jupiter-api:5.7.2")
-                    compileOnly("org.junit.jupiter:junit-jupiter-params:5.7.2")
+
+                    runtimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+                    compileOnly("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+                    compileOnly("org.junit.jupiter:junit-jupiter-params:$junitVersion")
                 }
             }
         }
@@ -86,26 +77,33 @@ allprojects {
 }
 
 kotlin {
+    @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
-                implementation("kr.jadekim:common-util:1.1.16")
+                val kotlinxCoroutineVersion: String by project
+                val kotlinxSerializationVersion: String by project
+                val commonUtilVersion: String by project
 
-                api("${rootProject.group}:terra-wallet:${rootProject.version}")
-                api("${rootProject.group}:terra-sdk-transaction:${rootProject.version}")
-                api("${rootProject.group}:terra-client:${rootProject.version}")
-                api("${rootProject.group}:terra-messages:${rootProject.version}")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutineVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
+                implementation("kr.jadekim:common-util:$commonUtilVersion")
 
-                compileOnly("${rootProject.group}:terra-client-rest:$version")
+                api(project(":terra-wallet"))
+                api(project(":terra-sdk-transaction"))
+                api(project(":terra-client"))
+                api(project(":terra-messages"))
+
+                compileOnly(project(":terra-client-rest"))
             }
         }
         val commonTest by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-logging:1.6.1")
+                val ktorVersion: String by project
 
-                implementation("${rootProject.group}:terra-client-rest:${rootProject.version}")
+                implementation("io.ktor:ktor-client-logging:$ktorVersion")
+
+                implementation(project(":terra-client-rest"))
             }
         }
     }
