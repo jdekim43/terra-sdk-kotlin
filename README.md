@@ -2,6 +2,8 @@
 The Terra Software Development Kit (SDK) in Kotlin is a simple library toolkit for building software that can interact
 with the Terra blockchain and provides simple abstractions over core data structures, serialization, and API request generation.
 
+**This repository will be deprecated. Use https://github.com/terra-money/terra.kt**
+
 ## Features
 * Support Multiple Platform
   * Kotlin/JVM
